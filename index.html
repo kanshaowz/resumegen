@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeGen - 简历生成器</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1e3a5f"/>
+                    <path d="M8 12h16M8 16h12M8 20h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h1>ResumeGen</h1>
+            </div>
+            <div class="language-selector">
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="zh">中文</option>
+                    <option value="es">Español</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Editor Panel -->
+            <div class="editor-panel">
+                <div class="section-tabs">
+                    <button class="tab-btn active" data-section="personal">
+                        <span class="tab-icon">👤</span>
+                        <span data-i18n="personal">Personal</span>
+                    </button>
+                    <button class="tab-btn" data-section="experience">
+                        <span class="tab-icon">💼</span>
+                        <span data-i18n="experience">Experience</span>
+                    </button>
+                    <button class="tab-btn" data-section="education">
+                        <span class="tab-icon">🎓</span>
+                        <span data-i18n="education">Education</span>
+                    </button>
+                    <button class="tab-btn" data-section="skills">
+                        <span class="tab-icon">⚡</span>
+                        <span data-i18n="skills">Skills</span>
+                    </button>
+                </div>
+
+                <!-- Personal Info Form -->
+                <div class="form-section active" id="personalSection">
+                    <h3 data-i18n="personalInfo">Personal Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label data-i18n="fullName">Full Name</label>
+                            <input type="text" id="fullName" data-field="name" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="jobTitle">Job Title</label>
+                            <input type="text" id="jobTitle" data-field="title" placeholder="Software Engineer">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="email">Email</label>
+                            <input type="email" id="email" data-field="email" placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="phone">Phone</label>
+                            <input type="tel" id="phone" data-field="phone" placeholder="+1 234 567 890">
+                        </div>
+                        <div class="form-group full-width">
+                            <label data-i18n="address">Address</label>
+                            <input type="text" id="address" data-field="address" placeholder="New York, NY">
+                        </div>
+                        <div class="form-group full-width">
+                            <label data-i18n="summary">Professional Summary</label>
+                            <textarea id="summary" data-field="summary" rows="4" placeholder="Brief description of your professional background..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience Form -->
+                <div class="form-section" id="experienceSection">
+                    <div class="section-header">
+                        <h3 data-i18n="workExperience">Work Experience</h3>
+                        <button class="btn-add" id="addExperience">
+                            <span>+</span>
+                            <span data-i18n="add">Add</span>
+                        </button>
+                    </div>
+                    <div class="experience-list" id="experienceList">
+                        <!-- Dynamic experience items -->
+                    </div>
+                </div>
+
+                <!-- Education Form -->
+                <div class="form-section" id="educationSection">
+                    <div class="section-header">
+                        <h3 data-i18n="education">Education</h3>
+                        <button class="btn-add" id="addEducation">
+                            <span>+</span>
+                            <span data-i18n="add">Add</span>
+                        </button>
+                    </div>
+                    <div class="education-list" id="educationList">
+                        <!-- Dynamic education items -->
+                    </div>
+                </div>
+
+                <!-- Skills Form -->
+                <div class="form-section" id="skillsSection">
+                    <h3 data-i18n="skills">Skills</h3>
+                    <div class="form-group">
+                        <label data-i18n="enterSkills">Enter skills (comma separated)</label>
+                        <textarea id="skillsInput" rows="6" placeholder="JavaScript, React, Node.js, Python..."></textarea>
+                    </div>
+                    <div class="skills-preview" id="skillsPreview">
+                        <!-- Dynamic skill tags -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <h3 data-i18n="preview">Preview</h3>
+                    <button class="btn-download" id="downloadBtn">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 2v8M4 10l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span data-i18n="downloadPDF">Download PDF</span>
+                    </button>
+                </div>
+                <div class="preview-container">
+                    <div class="resume" id="resumePreview">
+                        <div class="resume-header">
+                            <h1 class="resume-name" id="previewName">Your Name</h1>
+                            <p class="resume-title" id="previewTitle">Job Title</p>
+                            <div class="resume-contact">
+                                <span id="previewEmail">email@example.com</span>
+                                <span class="divider">|</span>
+                                <span id="previewPhone">+1 234 567 890</span>
+                                <span class="divider">|</span>
+                                <span id="previewAddress">City, Country</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resume-section" id="summarySection">
+                            <h2 class="section-title" data-i18n="professionalSummary">Professional Summary</h2>
+                            <p class="summary-text" id="previewSummary">Your professional summary will appear here...</p>
+                        </div>
+
+                        <div class="resume-section" id="experiencePreviewSection">
+                            <h2 class="section-title" data-i18n="workExperience">Work Experience</h2>
+                            <div class="experience-items" id="previewExperience">
+                                <!-- Dynamic experience -->
+                            </div>
+                        </div>
+
+                        <div class="resume-section" id="educationPreviewSection">
+                            <h2 class="section-title" data-i18n="education">Education</h2>
+                            <div class="education-items" id="previewEducation">
+                                <!-- Dynamic education -->
+                            </div>
+                        </div>
+
+                        <div class="resume-section" id="skillsPreviewSection">
+                            <h2 class="section-title" data-i18n="skills">Skills</h2>
+                            <div class="skills-list" id="previewSkills">
+                                <!-- Dynamic skills -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
