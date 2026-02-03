@@ -1,186 +1,446 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResumeGen - 简历生成器</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>ResumeGen Pro - 专业简历生成器</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <rect width="32" height="32" rx="8" fill="#1e3a5f"/>
-                    <path d="M8 12h16M8 16h12M8 20h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <h1>ResumeGen</h1>
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-page">
+        <nav class="landing-nav">
+            <div class="nav-brand">
+                <i class="fas fa-file-alt"></i>
+                <span>ResumeGen Pro</span>
             </div>
-            <div class="language-selector">
-                <select id="languageSelect">
-                    <option value="en">English</option>
-                    <option value="zh">中文</option>
-                    <option value="es">Español</option>
-                    <option value="ja">日本語</option>
-                    <option value="ko">한국어</option>
-                </select>
+            <div class="nav-links">
+                <a href="#features">功能特性</a>
+                <a href="#templates">模板</a>
+                <button class="btn-primary" onclick="showTemplateSelection()">开始创建</button>
+            </div>
+        </nav>
+        
+        <header class="landing-hero">
+            <div class="hero-content">
+                <h1>专业简历，<span class="highlight">一键生成</span></h1>
+                <p>使用 AI 驱动的简历生成器，在几分钟内创建令人印象深刻的简历</p>
+                <button class="btn-cta" onclick="showTemplateSelection()">
+                    <i class="fas fa-rocket"></i>
+                    免费开始创建
+                </button>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">专业模板</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">AI</span>
+                        <span class="stat-label">智能建议</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">免费使用</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="resume-preview-floating">
+                    <div class="floating-card card-1">
+                        <i class="fas fa-check-circle"></i>
+                        <span>通过ATS筛选</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="fas fa-magic"></i>
+                        <span>AI优化</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- Template Selection Modal -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content template-modal">
+            <div class="modal-header">
+                <h2>选择您的简历模板</h2>
+                <p>从多种专业设计中选择，随时可更换</p>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="template-categories">
+                <button class="category-btn active" data-category="all">全部</button>
+                <button class="category-btn" data-category="modern">现代</button>
+                <button class="category-btn" data-category="classic">经典</button>
+                <button class="category-btn" data-category="creative">创意</button>
+                <button class="category-btn" data-category="minimal">极简</button>
+            </div>
+            <div class="templates-grid" id="templatesGrid">
+                <!-- Templates will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app hidden">
+        <!-- Top Bar -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="btn-icon" onclick="backToLanding()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="brand-small">
+                    <i class="fas fa-file-alt"></i>
+                    <span>ResumeGen</span>
+                </div>
+            </div>
+            
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <span class="step-label">个人信息</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <span class="step-label">工作经历</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <span class="step-label">教育背景</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <span class="step-label">技能专长</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button class="btn-secondary" onclick="resetData()">
+                    <i class="fas fa-redo"></i>
+                    <span>重置</span>
+                </button>
+                <button class="btn-primary" onclick="showExportModal()">
+                    <i class="fas fa-download"></i>
+                    <span>导出</span>
+                </button>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Editor Panel -->
-            <div class="editor-panel">
-                <div class="section-tabs">
-                    <button class="tab-btn active" data-section="personal">
-                        <span class="tab-icon">👤</span>
-                        <span data-i18n="personal">Personal</span>
-                    </button>
-                    <button class="tab-btn" data-section="experience">
-                        <span class="tab-icon">💼</span>
-                        <span data-i18n="experience">Experience</span>
-                    </button>
-                    <button class="tab-btn" data-section="education">
-                        <span class="tab-icon">🎓</span>
-                        <span data-i18n="education">Education</span>
-                    </button>
-                    <button class="tab-btn" data-section="skills">
-                        <span class="tab-icon">⚡</span>
-                        <span data-i18n="skills">Skills</span>
-                    </button>
-                </div>
-
-                <!-- Personal Info Form -->
-                <div class="form-section active" id="personalSection">
-                    <h3 data-i18n="personalInfo">Personal Information</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label data-i18n="fullName">Full Name</label>
-                            <input type="text" id="fullName" data-field="name" placeholder="John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="jobTitle">Job Title</label>
-                            <input type="text" id="jobTitle" data-field="title" placeholder="Software Engineer">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="email">Email</label>
-                            <input type="email" id="email" data-field="email" placeholder="john@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="phone">Phone</label>
-                            <input type="tel" id="phone" data-field="phone" placeholder="+1 234 567 890">
-                        </div>
-                        <div class="form-group full-width">
-                            <label data-i18n="address">Address</label>
-                            <input type="text" id="address" data-field="address" placeholder="New York, NY">
-                        </div>
-                        <div class="form-group full-width">
-                            <label data-i18n="summary">Professional Summary</label>
-                            <textarea id="summary" data-field="summary" rows="4" placeholder="Brief description of your professional background..."></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Experience Form -->
-                <div class="form-section" id="experienceSection">
-                    <div class="section-header">
-                        <h3 data-i18n="workExperience">Work Experience</h3>
-                        <button class="btn-add" id="addExperience">
-                            <span>+</span>
-                            <span data-i18n="add">Add</span>
+        <div class="app-body">
+            <!-- Left Panel - Editor -->
+            <aside class="editor-panel">
+                <!-- Template & Theme Controls -->
+                <div class="panel-section theme-controls">
+                    <div class="control-group">
+                        <label>当前模板</label>
+                        <button class="btn-select" onclick="showTemplateSelection()">
+                            <span id="currentTemplateName">现代专业</span>
+                            <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
-                    <div class="experience-list" id="experienceList">
-                        <!-- Dynamic experience items -->
+                    <div class="control-group">
+                        <label>配色主题</label>
+                        <div class="color-themes" id="colorThemes">
+                            <button class="theme-btn active" data-theme="navy" style="--theme-color: #1e3a5f;"></button>
+                            <button class="theme-btn" data-theme="forest" style="--theme-color: #2d5a3d;"></button>
+                            <button class="theme-btn" data-theme="burgundy" style="--theme-color: #722f37;"></button>
+                            <button class="theme-btn" data-theme="slate" style="--theme-color: #475569;"></button>
+                            <button class="theme-btn" data-theme="indigo" style="--theme-color: #3730a3;"></button>
+                            <button class="theme-btn" data-theme="rose" style="--theme-color: #be123c;"></button>
+                            <button class="theme-btn" data-theme="emerald" style="--theme-color: #047857;"></button>
+                            <button class="theme-btn" data-theme="amber" style="--theme-color: #b45309;"></button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Education Form -->
-                <div class="form-section" id="educationSection">
-                    <div class="section-header">
-                        <h3 data-i18n="education">Education</h3>
-                        <button class="btn-add" id="addEducation">
-                            <span>+</span>
-                            <span data-i18n="add">Add</span>
-                        </button>
+                <!-- Step 1: Personal Info -->
+                <div class="form-step active" id="step1">
+                    <div class="step-header">
+                        <h2><i class="fas fa-user"></i> 个人信息</h2>
+                        <p class="step-desc">填写基本信息，让雇主快速了解您</p>
                     </div>
-                    <div class="education-list" id="educationList">
-                        <!-- Dynamic education items -->
-                    </div>
-                </div>
-
-                <!-- Skills Form -->
-                <div class="form-section" id="skillsSection">
-                    <h3 data-i18n="skills">Skills</h3>
-                    <div class="form-group">
-                        <label data-i18n="enterSkills">Enter skills (comma separated)</label>
-                        <textarea id="skillsInput" rows="6" placeholder="JavaScript, React, Node.js, Python..."></textarea>
-                    </div>
-                    <div class="skills-preview" id="skillsPreview">
-                        <!-- Dynamic skill tags -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Preview Panel -->
-            <div class="preview-panel">
-                <div class="preview-header">
-                    <h3 data-i18n="preview">Preview</h3>
-                    <button class="btn-download" id="downloadBtn">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 2v8M4 10l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span data-i18n="downloadPDF">Download PDF</span>
-                    </button>
-                </div>
-                <div class="preview-container">
-                    <div class="resume" id="resumePreview">
-                        <div class="resume-header">
-                            <h1 class="resume-name" id="previewName">Your Name</h1>
-                            <p class="resume-title" id="previewTitle">Job Title</p>
-                            <div class="resume-contact">
-                                <span id="previewEmail">email@example.com</span>
-                                <span class="divider">|</span>
-                                <span id="previewPhone">+1 234 567 890</span>
-                                <span class="divider">|</span>
-                                <span id="previewAddress">City, Country</span>
+                    
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>姓名 <span class="required">*</span></label>
+                                <input type="text" id="fullName" data-field="name" placeholder="例如：张三">
+                            </div>
+                            <div class="form-group">
+                                <label>职位头衔 <span class="required">*</span></label>
+                                <input type="text" id="jobTitle" data-field="title" placeholder="例如：高级产品经理">
                             </div>
                         </div>
                         
-                        <div class="resume-section" id="summarySection">
-                            <h2 class="section-title" data-i18n="professionalSummary">Professional Summary</h2>
-                            <p class="summary-text" id="previewSummary">Your professional summary will appear here...</p>
-                        </div>
-
-                        <div class="resume-section" id="experiencePreviewSection">
-                            <h2 class="section-title" data-i18n="workExperience">Work Experience</h2>
-                            <div class="experience-items" id="previewExperience">
-                                <!-- Dynamic experience -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>电子邮箱 <span class="required">*</span></label>
+                                <input type="email" id="email" data-field="email" placeholder="example@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>联系电话</label>
+                                <input type="tel" id="phone" data-field="phone" placeholder="+86 138 0000 0000">
                             </div>
                         </div>
-
-                        <div class="resume-section" id="educationPreviewSection">
-                            <h2 class="section-title" data-i18n="education">Education</h2>
-                            <div class="education-items" id="previewEducation">
-                                <!-- Dynamic education -->
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>所在城市</label>
+                                <input type="text" id="location" data-field="location" placeholder="例如：上海">
+                            </div>
+                            <div class="form-group">
+                                <label>个人网站 / LinkedIn</label>
+                                <input type="text" id="website" data-field="website" placeholder="linkedin.com/in/username">
                             </div>
                         </div>
-
-                        <div class="resume-section" id="skillsPreviewSection">
-                            <h2 class="section-title" data-i18n="skills">Skills</h2>
-                            <div class="skills-list" id="previewSkills">
-                                <!-- Dynamic skills -->
+                        
+                        <div class="form-group full-width">
+                            <label>个人简介 <span class="required">*</span></label>
+                            <div class="ai-assist">
+                                <textarea id="summary" data-field="summary" rows="4" placeholder="简要描述您的专业背景和核心优势..."></textarea>
+                                <button class="ai-btn" onclick="generateAISummary()">
+                                    <i class="fas fa-sparkles"></i>
+                                    AI 优化
+                                </button>
                             </div>
+                            <p class="hint">建议 3-5 句话，突出您的关键成就和专业特长</p>
                         </div>
                     </div>
+                    
+                    <div class="step-actions">
+                        <button class="btn-primary btn-next" onclick="nextStep()">
+                            下一步：工作经历
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Experience -->
+                <div class="form-step" id="step2">
+                    <div class="step-header">
+                        <h2><i class="fas fa-briefcase"></i> 工作经历</h2>
+                        <p class="step-desc">展示您的职业历程和关键成就</p>
+                    </div>
+                    
+                    <div class="experience-list" id="experienceList">
+                        <!-- Dynamic experience items -->
+                    </div>
+                    
+                    <button class="btn-add" onclick="addExperience()">
+                        <i class="fas fa-plus"></i>
+                        添加工作经历
+                    </button>
+                    
+                    <div class="step-actions">
+                        <button class="btn-text" onclick="prevStep()">
+                            <i class="fas fa-arrow-left"></i>
+                            上一步
+                        </button>
+                        <button class="btn-primary btn-next" onclick="nextStep()">
+                            下一步：教育背景
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Education -->
+                <div class="form-step" id="step3">
+                    <div class="step-header">
+                        <h2><i class="fas fa-graduation-cap"></i> 教育背景</h2>
+                        <p class="step-desc">填写您的学历和教育经历</p>
+                    </div>
+                    
+                    <div class="education-list" id="educationList">
+                        <!-- Dynamic education items -->
+                    </div>
+                    
+                    <button class="btn-add" onclick="addEducation()">
+                        <i class="fas fa-plus"></i>
+                        添加教育经历
+                    </button>
+                    
+                    <div class="step-actions">
+                        <button class="btn-text" onclick="prevStep()">
+                            <i class="fas fa-arrow-left"></i>
+                            上一步
+                        </button>
+                        <button class="btn-primary btn-next" onclick="nextStep()">
+                            下一步：技能专长
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Skills -->
+                <div class="form-step" id="step4">
+                    <div class="step-header">
+                        <h2><i class="fas fa-lightbulb"></i> 技能专长</h2>
+                        <p class="step-desc">突出您的核心技能和专业知识</p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label>专业技能</label>
+                            <div class="ai-assist">
+                                <input type="text" id="skillsInput" placeholder="输入技能，按回车或逗号添加">
+                                <button class="ai-btn" onclick="suggestSkills()">
+                                    <i class="fas fa-sparkles"></i>
+                                    AI 建议
+                                </button>
+                            </div>
+                            <p class="hint">建议添加 8-12 个核心技能，包括技术技能和软技能</p>
+                        </div>
+                        
+                        <div class="skills-container" id="skillsContainer">
+                            <!-- Dynamic skill tags -->
+                        </div>
+                        
+                        <div class="popular-skills">
+                            <label>热门技能</label>
+                            <div class="skill-suggestions" id="skillSuggestions">
+                                <span class="skill-chip" onclick="addSkill('JavaScript')">JavaScript</span>
+                                <span class="skill-chip" onclick="addSkill('Python')">Python</span>
+                                <span class="skill-chip" onclick="addSkill('项目管理')">项目管理</span>
+                                <span class="skill-chip" onclick="addSkill('数据分析')">数据分析</span>
+                                <span class="skill-chip" onclick="addSkill('团队协作')">团队协作</span>
+                                <span class="skill-chip" onclick="addSkill('React')">React</span>
+                                <span class="skill-chip" onclick="addSkill('沟通能力')">沟通能力</span>
+                                <span class="skill-chip" onclick="addSkill('领导力')">领导力</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>语言能力</label>
+                            <div class="languages-list" id="languagesList">
+                                <!-- Dynamic language items -->
+                            </div>
+                            <button class="btn-add-small" onclick="addLanguage()">
+                                <i class="fas fa-plus"></i>
+                                添加语言
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>证书与荣誉</label>
+                            <textarea id="certifications" data-field="certifications" rows="3" placeholder="例如：PMP认证、AWS认证、优秀员工奖..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="step-actions">
+                        <button class="btn-text" onclick="prevStep()">
+                            <i class="fas fa-arrow-left"></i>
+                            上一步
+                        </button>
+                        <button class="btn-primary btn-next" onclick="finishAndExport()">
+                            <i class="fas fa-check"></i>
+                            完成并导出
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Panel - Preview -->
+            <main class="preview-panel">
+                <div class="preview-toolbar">
+                    <div class="zoom-controls">
+                        <button class="btn-icon" onclick="adjustZoom(-0.1)" title="缩小">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="zoom-level" id="zoomLevel">100%</span>
+                        <button class="btn-icon" onclick="adjustZoom(0.1)" title="放大">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="btn-icon" onclick="togglePreviewMode()" title="切换预览模式">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="preview-container" id="previewContainer">
+                    <div class="resume-preview" id="resumePreview">
+                        <!-- Resume content will be rendered here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content export-modal">
+            <button class="modal-close" onclick="closeExportModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>导出简历</h2>
+            <p class="modal-desc">选择您需要的格式导出简历</p>
+            
+            <div class="export-options">
+                <div class="export-option" onclick="exportPDF()">
+                    <div class="export-icon pdf">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3>PDF 格式</h3>
+                    <p>最推荐的格式，适合在线申请和打印</p>
+                    <span class="badge recommended">推荐</span>
+                </div>
+                
+                <div class="export-option" onclick="exportWord()">
+                    <div class="export-icon word">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <h3>Word 格式</h3>
+                    <p>可编辑格式，方便后续修改</p>
+                </div>
+                
+                <div class="export-option" onclick="printResume()">
+                    <div class="export-icon print">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <h3>直接打印</h3>
+                    <p>连接打印机直接打印简历</p>
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
+
+    <!-- AI Suggestion Modal -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content ai-modal">
+            <button class="modal-close" onclick="closeAIModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="ai-header">
+                <div class="ai-icon">
+                    <i class="fas fa-sparkles"></i>
+                </div>
+                <h2>AI 智能建议</h2>
+            </div>
+            <div id="aiContent" class="ai-content">
+                <!-- AI content will be rendered here -->
+            </div>
+            <div class="ai-actions">
+                <button class="btn-secondary" onclick="closeAIModal()">取消</button>
+                <button class="btn-primary" onclick="applyAISuggestion()">应用建议</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">操作成功</span>
     </div>
 
     <script src="app.js"></script>
