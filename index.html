@@ -23,6 +23,7 @@
             <div class="nav-links">
                 <a href="#features">功能特性</a>
                 <a href="#templates">模板</a>
+                <button class="btn-icon" id="darkModeBtn" onclick="toggleDarkMode()" title="切换主题" style="font-size: 18px; background: none; border: none; cursor: pointer;">🌙</button>
                 <button class="btn-primary" onclick="showTemplateSelection()">开始创建</button>
             </div>
         </nav>
@@ -444,5 +445,32 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+        // Dark Mode
+        const STORAGE_KEY = 'resumegen-theme';
+        const DARK_CLASS = 'dark-mode';
+
+        function initDarkMode() {
+            const savedTheme = localStorage.getItem(STORAGE_KEY);
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add(DARK_CLASS);
+                updateDarkModeIcon(true);
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle(DARK_CLASS);
+            localStorage.setItem(STORAGE_KEY, isDark ? 'dark' : 'light');
+            updateDarkModeIcon(isDark);
+        }
+
+        function updateDarkModeIcon(isDark) {
+            const btn = document.getElementById('darkModeBtn');
+            if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+        }
+
+        initDarkMode();
+    </script>
 </body>
 </html>
